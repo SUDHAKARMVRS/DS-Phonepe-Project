@@ -65,7 +65,6 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 ## 📷 Screen Shots of Dashboard
 <img width="1920" height="1080" alt="Screenshot 2025-08-05 112535" src="https://github.com/user-attachments/assets/2c1ff7d3-8a3a-481d-8981-5fac68220433" />
 <img width="1920" height="1080" alt="Screenshot 2025-08-05 094218" src="https://github.com/user-attachments/assets/df622c12-c937-4328-8eb6-707d8f712ee7" />
-<img width="1920" height="1080" alt="Screenshot 2025-08-05 094239" src="https://github.com/user-attachments/assets/9fc9d910-1b6d-4f38-b97f-5349fc4ca7c3" />
 
 
 ---
