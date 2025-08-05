@@ -1,13 +1,15 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import json
+import matplotlib as plt
+import seaborn as sns
+import pydeck as pdk
 from sqlalchemy import create_engine
 
 # ---------------------------
 # Database Connection
 # ---------------------------
-engine = create_engine('postgresql://postgres:******@localhost:****/Phonepe_Project')
+engine = create_engine('postgresql://postgres:sugana@localhost:5432/Phonepe_Project')
 
 # ---------------------------
 # Load Data from PostgreSQL
@@ -22,7 +24,6 @@ map_conins = pd.read_sql("SELECT * FROM map_conty_insurance", engine)
 top_trans = pd.read_sql("SELECT * FROM top_transaction", engine)
 top_user = pd.read_sql("SELECT * FROM top_user", engine)
 top_ins = pd.read_sql("SELECT * FROM top_insurance", engine)
-
 
 
 # ---------------------------
@@ -49,6 +50,14 @@ df = pd.merge(mdf2,map_ins,on=merge_map,how="outer")
 # Fill the unfilled latitudes & longitudes
 df[['latitude', 'longitude']] = df[['latitude', 'longitude']].ffill().bfill()
 df.fillna(0, inplace=True)
+df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
+df['total_transactions'] = pd.to_numeric(df['transaction_count'], errors='coerce')
+df['total_amount'] = pd.to_numeric(df['transaction_amount'], errors='coerce')
+df['app_opens'] = pd.to_numeric(df['app_opens'], errors='coerce')
+df['registered_users'] = pd.to_numeric(df['registered_users'], errors='coerce')
+df.dropna(subset=['latitude', 'longitude', 'transaction_count','app_opens','registered_users','transaction_amount'], inplace=True)
+
 
 # Sidebar Filters
 with st.sidebar:
@@ -105,7 +114,37 @@ tab1, tab2, tab3, tab4 = st.tabs(["📈:violet[**Metrics**]", "📊:violet[**Vis
 with tab1:
  
  metric(filtered_df)
+ st.subheader("📍 PhonePe District-Level Map (Transactions & Users)")
 
+# Plotly Map
+fig = px.scatter_mapbox(
+    filtered_df,
+    lat="latitude",
+    lon="longitude",
+    size="total_transactions",
+    color="total_amount",
+    hover_name="district",
+    hover_data={
+        "state": True,
+        "total_transactions": True,
+        "total_amount": True,
+        "registered_users": True,
+        "app_opens": True,
+        "latitude": False,
+        "longitude": False
+    },
+    size_max=30,
+    color_continuous_scale="Plasma",
+    zoom=4,
+    height=650
+)
+
+fig.update_layout(
+    mapbox_style="open-street-map",
+    margin={"r":0, "t":0, "l":0, "b":0}
+)
+
+st.plotly_chart(fig, use_container_width=True)
 # ---------------------------
 # Tab 2: Charts
 # ---------------------------
@@ -454,7 +493,7 @@ with tab2:
 
     with st.expander("_**INSIGHT & RECOMMENDS**_"):
         st.subheader("💡Insights")
-        st.write("""**OVERALL INSIGHTS**
+        st.write("""
 1. Transaction Trends:
    - High-performing states - Maharashtra, Karnataka, and Tamil Nadu.
    - Transactions have grown steadily year-over-year.
@@ -532,7 +571,6 @@ with tab3:
 
         st.markdown('---')
 
-st.balloons()
 # ---------------------------
 # Tab 3: Map
 # ---------------------------
@@ -629,9 +667,4 @@ with tab4:
                 st.plotly_chart(fig4, use_container_width=True)
 
 
-# ---------------------------
-# Tab 4: Data Tables
-# ---------------------------
-
-
-
+st.balloons()
