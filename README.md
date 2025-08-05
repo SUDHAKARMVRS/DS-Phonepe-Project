@@ -10,7 +10,7 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 - 💰 **Transaction Analysis**: By state, district, year, quarter, type
 - 📲 **User Engagement**: Registered users, app opens, growth trends
 - 🛡️ **Insurance Insights**: Market penetration, growth rates
-- 📍 **Interactive Map**: Choropleth map with States overlays
+- 📍 **Interactive Map**: Plotly map with States overlays
 - 🔍 **Business Case Studies**: 45+ pre-built queries grouped by use case
 
 ---
