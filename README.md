@@ -63,8 +63,9 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 📫 [[LinkedIn]](https://www.linkedin.com/in/sudhakar-m-657ba787/) 
 📧 sudhakar.mvrs@gmail.com
 ## 📷 Screen Shots of Dashboard
-<img width="1920" height="1080" alt="Screenshot 2025-08-05 093726" src="https://github.com/user-attachments/assets/8b712259-176a-4a87-8080-90979ef94111" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-05 094228" src="https://github.com/user-attachments/assets/9e08c5e8-a5e1-4241-a02f-bc9e9bd6d7e6" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-05 094218" src="https://github.com/user-attachments/assets/df622c12-c937-4328-8eb6-707d8f712ee7" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-05 094239" src="https://github.com/user-attachments/assets/9fc9d910-1b6d-4f38-b97f-5349fc4ca7c3" />
 
-<img width="1920" height="1080" alt="Screenshot 2025-08-05 093745" src="https://github.com/user-attachments/assets/549e7ede-8c0d-4da0-8ba1-9a12f20d4dee" />
 
 ---
