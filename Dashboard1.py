@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 # ---------------------------
 # Database Connection
 # ---------------------------
-engine = create_engine('postgresql://postgres:sugana@localhost:5432/Phonepe_Project')
+engine = create_engine('postgresql://postgres:******@localhost:****/Phonepe_Project')
 
 # ---------------------------
 # Load Data from PostgreSQL
@@ -634,4 +634,5 @@ with tab4:
 # ---------------------------
 # Tab 4: Data Tables
 # ---------------------------
+
 
