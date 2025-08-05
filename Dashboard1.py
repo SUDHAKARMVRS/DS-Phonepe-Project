@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import matplotlib as plt
-import seaborn as sns
-import pydeck as pdk
+import json
 from sqlalchemy import create_engine
 
 # ---------------------------
@@ -634,5 +632,6 @@ with tab4:
 # ---------------------------
 # Tab 4: Data Tables
 # ---------------------------
+
 
 
