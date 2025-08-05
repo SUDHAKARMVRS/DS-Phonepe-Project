@@ -1,7 +1,7 @@
 
 # 📱 PhonePe Pulse Dashboard (2024)
 
-An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**, **Plotly**, and **PyDeck** to visualize and analyze PhonePe transaction and user data across India from 2018 to 2024.
+An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**, **Plotly** to visualize and analyze PhonePe transaction and user data across India from 2018 to 2024.
 
 ---
 
@@ -20,7 +20,7 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 - **Frontend**: Streamlit, Plotly, PyDeck
 - **Backend**: PostgreSQL (via SQLAlchemy)
 - **Data**: PhonePe Pulse Public Data (Aggregated + Map + Top data)
-- **GeoJSON**: [GeoHacker India States](https://github.com/geohacker/india)
+- **GeoJSON**:(https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson)
 
 ---
 
@@ -60,7 +60,8 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 ## 🙋‍♂️ Author
 
 **Sudhakar M.**  
-📫 [LinkedIn](https://www.linkedin.com/) • 📧 [your_email@example.com]
+📫 [[LinkedIn]](https://www.linkedin.com/in/sudhakar-m-657ba787/) 
+📧 sudhakar.mvrs@gmail.com
 
 ---
 
