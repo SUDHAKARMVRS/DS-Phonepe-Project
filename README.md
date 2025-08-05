@@ -62,9 +62,9 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 **Sudhakar M.**  
 📫 [[LinkedIn]](https://www.linkedin.com/in/sudhakar-m-657ba787/) 
 📧 sudhakar.mvrs@gmail.com
+## 📷 Screen Shots of Dashboard
+<img width="1920" height="1080" alt="Screenshot 2025-08-05 093726" src="https://github.com/user-attachments/assets/8b712259-176a-4a87-8080-90979ef94111" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-08-05 093745" src="https://github.com/user-attachments/assets/549e7ede-8c0d-4da0-8ba1-9a12f20d4dee" />
 
 ---
-
-## 📜 License
-
-This project is licensed under the MIT License.
