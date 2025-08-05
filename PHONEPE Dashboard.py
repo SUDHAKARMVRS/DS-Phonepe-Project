@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 # ---------------------------
 # Database Connection
 # ---------------------------
-engine = create_engine('postgresql://postgres:******@localhost:****/Phonepe_Project')
+engine = create_engine('postgresql://postgres:sugana@localhost:5432/Phonepe_Project')
 
 # ---------------------------
 # Load Data from PostgreSQL
@@ -63,12 +63,14 @@ df.dropna(subset=['latitude', 'longitude', 'transaction_count','app_opens','regi
 with st.sidebar:
     st.header("🔍:violet[**Filter Data**]")
     selected_state = st.multiselect("Select State", df['state'].unique(), default=df['state'].unique())
+    selected_district = st.multiselect("Select district", df['district'].unique(), default=df['district'].unique())
     selected_quarter = st.multiselect("Select Quarter", df['quarter'].unique(), default=df['quarter'].unique())
     selected_year = st.multiselect("Select Year", df['year'].unique(), default=df['year'].unique())
 
 # Filter DataFrame
 filtered_df = df[
     (df['state'].isin(selected_state)) &
+    (df['district'].isin(selected_district)) &
     (df['year'].isin(selected_year)) &
     (df['quarter'].isin(selected_quarter))
 ]
@@ -102,7 +104,6 @@ def metric(df):
     
     st.markdown('---')
 
-
 # ---------------------------
 # Tabs: Metrics | Charts | Raw Data | Maps
 # ---------------------------
@@ -114,37 +115,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["📈:violet[**Metrics**]", "📊:violet[**Vis
 with tab1:
  
  metric(filtered_df)
- st.subheader("📍 PhonePe District-Level Map (Transactions & Users)")
 
-# Plotly Map
-fig = px.scatter_mapbox(
-    filtered_df,
-    lat="latitude",
-    lon="longitude",
-    size="total_transactions",
-    color="total_amount",
-    hover_name="district",
-    hover_data={
-        "state": True,
-        "total_transactions": True,
-        "total_amount": True,
-        "registered_users": True,
-        "app_opens": True,
-        "latitude": False,
-        "longitude": False
-    },
-    size_max=30,
-    color_continuous_scale="Plasma",
-    zoom=4,
-    height=650
-)
-
-fig.update_layout(
-    mapbox_style="open-street-map",
-    margin={"r":0, "t":0, "l":0, "b":0}
-)
-
-st.plotly_chart(fig, use_container_width=True)
 # ---------------------------
 # Tab 2: Charts
 # ---------------------------
@@ -576,96 +547,35 @@ with tab3:
 # ---------------------------
 
 with tab4:
-        import requests
+        st.subheader("📍 PhonePe District-Level Map (Transactions & Users)")
 
-# Load India GeoJSON
-        url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
-        india_geojson = requests.get(url).json()
+# Plotly Map
+        fig = px.scatter_mapbox(
+    filtered_df,
+    lat="latitude",
+    lon="longitude",
+    size="total_transactions",
+    color="total_amount",
+    hover_name="district",
+    hover_data={
+        "state": True,
+        "total_transactions": True,
+        "total_amount": True,
+        "registered_users": True,
+        "app_opens": True,
+        "latitude": False,
+        "longitude": False
+    },
+    size_max=30,
+    color_continuous_scale="Plasma",
+    zoom=4,
+    height=650)
 
-# Mapping for normalized state names
-        state_mapping = {
-    'andaman-&-nicobar-islands': 'Andaman & Nicobar Island',
-    'andhra-pradesh': 'Andhra Pradesh',
-    'arunachal-pradesh': 'Arunanchal Pradesh',
-    'assam': 'Assam',
-    'bihar': 'Bihar',
-    'chandigarh': 'Chandigarh',
-    'chhattisgarh': 'Chhattisgarh',
-    'dadra-&-nagar-haveli-&-daman-&-diu': 'Dadra and Nagar Haveli and Daman and Diu',
-    'delhi': 'Delhi',
-    'goa': 'Goa',
-    'gujarat': 'Gujarat',
-    'haryana': 'Haryana',
-    'himachal-pradesh': 'Himachal Pradesh',
-    'jammu-&-kashmir': 'Jammu & Kashmir',
-    'jharkhand': 'Jharkhand',
-    'karnataka': 'Karnataka',
-    'kerala': 'Kerala',
-    'ladakh': 'Ladakh',
-    'lakshadweep': 'Lakshadweep',
-    'madhya-pradesh': 'Madhya Pradesh',
-    'maharashtra': 'Maharashtra',
-    'manipur': 'Manipur',
-    'meghalaya': 'Meghalaya',
-    'mizoram': 'Mizoram',
-    'nagaland': 'Nagaland',
-    'odisha': 'Odisha',
-    'puducherry': 'Puducherry',
-    'punjab': 'Punjab',
-    'rajasthan': 'Rajasthan',
-    'sikkim': 'Sikkim',
-    'tamil-nadu': 'Tamil Nadu',
-    'telangana': 'Telangana',
-    'tripura': 'Tripura',
-    'uttar-pradesh': 'Uttar Pradesh',
-    'uttarakhand': 'Uttarakhand',
-    'west-bengal': 'West Bengal'
-}
+        fig.update_layout(
+    mapbox_style="open-street-map",
+    margin={"r":0, "t":0, "l":0, "b":0})
 
-# Sample DataFrame (replace with your actual filtered df)
-# df_map must have: state, transaction_amount, registered_users, app_opens, insurance_amount
-        df['state'] = df['state'].map(state_mapping)
-        df = df.dropna(subset=['state'])
-
-# Streamlit layout
-        tab1, tab2, tab3, tab4 = st.tabs([":blue[💸**_Transaction Amount_**]",":blue[👥**_Registered Users_**]",":blue[📱**_App Opens_**]",":blue[🛡️ **_Insurance Amount_**]"])
-
-        with tab1:
-                fig1 = px.choropleth(
-        df, geojson=india_geojson, featureidkey="properties.ST_NM",
-        locations="state", color="transaction_amount", hover_name="state",
-        color_continuous_scale="greens", title="Transaction Amount by State")
-                fig1.update_geos(fitbounds="locations", visible=False)
-                fig1.update_layout(height=550, margin={"r":0,"t":50,"l":0,"b":0})
-                st.plotly_chart(fig1, use_container_width=True)
-
-        with tab2:
-                fig2 = px.choropleth(
-        df, geojson=india_geojson, featureidkey="properties.ST_NM",
-        locations="state", color="registered_users", hover_name="state",
-        color_continuous_scale="blues", title="Registered Users by State")
-                fig2.update_geos(fitbounds="locations", visible=False)
-                fig2.update_layout(height=550, margin={"r":0,"t":50,"l":0,"b":0})
-                st.plotly_chart(fig2, use_container_width=True)
-
-        with tab3:
-                fig3 = px.choropleth(
-        df, geojson=india_geojson, featureidkey="properties.ST_NM",
-        locations="state", color="app_opens", hover_name="state",
-        color_continuous_scale="purples", title="App Opens by State")
-                fig3.update_geos(fitbounds="locations", visible=False)
-                fig3.update_layout(height=550, margin={"r":0,"t":50,"l":0,"b":0})
-                st.plotly_chart(fig3, use_container_width=True)
-
-        with tab4:
-                fig4 = px.choropleth(
-        df, geojson=india_geojson, featureidkey="properties.ST_NM",
-        locations="state", color="insurance_amount", hover_name="state",
-        color_continuous_scale="oranges", title="Insurance Amount by State")
-                fig4.update_geos(fitbounds="locations", visible=False)
-                fig4.update_layout(height=550, margin={"r":0,"t":50,"l":0,"b":0})
-                st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
 
 st.balloons()
-
