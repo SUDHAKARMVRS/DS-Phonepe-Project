@@ -27,7 +27,7 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/your-username/PhonePe-Dashboard.git
+   !git clone https://github.com/PhonePe/pulse.git
    cd PhonePe-Dashboard
    ```
 
