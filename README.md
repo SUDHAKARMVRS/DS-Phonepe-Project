@@ -20,7 +20,6 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 - **Frontend**: Streamlit, Plotly
 - **Backend**: PostgreSQL (via SQLAlchemy)
 - **Data**: PhonePe Pulse Public Data (Aggregated + Map + Top data)
-- **GeoJSON**:(https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson)
 
 ---
 
