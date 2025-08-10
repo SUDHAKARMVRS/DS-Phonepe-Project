@@ -6,7 +6,8 @@ from sqlalchemy import create_engine
 # ---------------------------
 # Database Connection
 # ---------------------------
-engine = create_engine('postgresql://postgres:sugana@localhost:5432/Phonepe_Project')
+engine = create_engine('postgresql://postgres:******@localhost:5432/Phonepe_Project')
+
 
 # ---------------------------
 # Load Data from PostgreSQL
@@ -587,3 +588,4 @@ with tab3:
 
 
 st.balloons()
+
