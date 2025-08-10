@@ -1,16 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import matplotlib as plt
-import seaborn as sns
-import pydeck as pdk
-from sqlalchemy import create_engineimport streamlit as st
-import pandas as pd
-import plotly.express as px
-import matplotlib as plt
-import seaborn as sns
-import pydeck as pdk
 from sqlalchemy import create_engine
+import streamlit as st
+
 
 # ---------------------------
 # Database Connection
@@ -1171,4 +1164,5 @@ with tab4:
 
 
 st.balloons()
+
 
