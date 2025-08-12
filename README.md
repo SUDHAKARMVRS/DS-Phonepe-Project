@@ -64,11 +64,12 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 
 <img width="960" height="540" alt="Page1" src="https://github.com/user-attachments/assets/8dd6bdcc-7b5a-42b7-a074-17207acbbfbd" />
 
-<img width="960" height="540" alt="Page2" src="https://github.com/user-attachments/assets/e094df78-1f2c-4520-81e5-3f97548c86d1" />
+<img width="960" height="540" alt="busines" src="https://github.com/user-attachments/assets/ef92cf93-8da7-495e-aa4e-b49525147f74" />
 
 <img width="960" height="540" alt="Page3" src="https://github.com/user-attachments/assets/c713891c-4f7e-4377-b96a-efaa670fec8a" />
 
 <img width="960" height="540" alt="Pagemap" src="https://github.com/user-attachments/assets/f1ed3246-4109-441e-b827-1809c1d91b25" />
 
+<img width="960" height="540" alt="insight" src="https://github.com/user-attachments/assets/29c750d3-3eb2-4dbc-b7cf-0e8c1fced247" />
 
 ---
