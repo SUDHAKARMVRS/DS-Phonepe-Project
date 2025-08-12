@@ -6,8 +6,7 @@ from sqlalchemy import create_engine
 # ---------------------------
 # Database Connection
 # ---------------------------
-engine = create_engine('postgresql://postgres:******@localhost:5432/Phonepe_Project')
-
+engine = create_engine('postgresql://postgres:sugana@localhost:5432/Phonepe_Project')
 
 # ---------------------------
 # Load Data from PostgreSQL
@@ -32,7 +31,7 @@ st.set_page_config(
     page_title="PhonePe Dashboard",
     page_icon="📱",
     layout="wide",
-    initial_sidebar_state="expanded")
+    initial_sidebar_state="collapsed")
 
 st.title("📱:violet[PhonePe Transactions Dashboard]")
 
@@ -65,7 +64,7 @@ df['longitude'] = df['longitude'].fillna(df['longitude_ref'])
 df = df.drop(columns=['latitude_ref', 'longitude_ref'])
 
 
-# Fill the unfilled latitudes & longitudes
+# Covert to Numeric
 df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
 df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
 df['transaction_count'] = pd.to_numeric(df['transaction_count'], errors='coerce')
@@ -79,7 +78,7 @@ df.dropna(subset=['latitude', 'longitude', 'transaction_count','app_opens','regi
 with st.sidebar:
     st.header("🔍:violet[**Filter Data**]")
     selected_state = st.multiselect("Select State", df['state'].unique(), default=df['state'].unique())
-    selected_district = st.multiselect("Select district", df['district'].unique(), default=df['district'].unique())
+    selected_district = st.multiselect("Select District", df['district'].unique(), default=df['district'].unique())
     selected_quarter = st.multiselect("Select Quarter", df['quarter'].unique(), default=df['quarter'].unique())
     selected_year = st.multiselect("Select Year", df['year'].unique(), default=df['year'].unique())
 
@@ -93,7 +92,7 @@ filtered_df = df[
 
 
 def metric(df):
-    st.header("📊:violet[_**Overview**_]")
+    st.header("📊:violet[**Overview**]")
     st.markdown('---')
     a,b,c = st.columns(3)
     g,h,i = st.columns(3)
@@ -123,7 +122,7 @@ def metric(df):
 # ---------------------------
 # Tabs: Metrics | Charts | Raw Data | Maps
 # ---------------------------
-tab1, tab2, tab3 = st.tabs(["📈:violet[**Metrics**]", "📊:violet[**Visualization**]", "📄:violet[**Data**]"])
+tab1, tab2, tab3,tab4 = st.tabs(["📈:violet[**Metrics**]", "📊:violet[**Visualization**]", "📄:violet[**Data**]","📄:violet[**Observations**]"])
 
 # ---------------------------
 # Tab 1: Metrics
@@ -131,7 +130,7 @@ tab1, tab2, tab3 = st.tabs(["📈:violet[**Metrics**]", "📊:violet[**Visualiza
 with tab1:
     metric(filtered_df)
 #Map    
-    st.header(":violet[_**🗺️Map (Transactions,Insurance,Users,App Opens)**_]")
+    st.header(":violet[**🗺️Map (Transactions,Insurance,Users,App Opens)**]")
     fig = px.scatter_mapbox(
     filtered_df,
     lat="latitude",
@@ -176,18 +175,17 @@ with tab2:
         st.plotly_chart(fig1)
 
 # ✅ Query 2: Year-over-Year Decline in Transaction Amount
-        q2 = '''WITH yearly_txn AS (SELECT state, year, SUM(transaction_amount) AS present_yr_ttlamount
-    FROM aggregated_transaction
-    GROUP BY state, year),with_lag AS (
-    SELECT *, LAG(present_yr_ttlamount) OVER (PARTITION BY state ORDER BY year) AS prev_yr_ttlamount
-    FROM yearly_txn)    
-        SELECT state, year, present_yr_ttlamount, prev_yr_ttlamount,
-       ((present_yr_ttlamount - prev_yr_ttlamount)/NULLIF(prev_yr_ttlamount, 0))*100 AS percentage FROM with_lag
-        WHERE present_yr_ttlamount < prev_yr_ttlamount
-        ORDER BY percentage'''
+        q2 = '''WITH yearly_txn AS (SELECT state, year, SUM(transaction_amount) AS present_year_totalamt
+                FROM aggregated_transaction GROUP BY state, year),
+                WITH_lag AS (SELECT *, LAG(present_year_totalamt) OVER (PARTITION BY state ORDER BY year) AS previous_year_totalamt
+                FROM yearly_txn)
+                SELECT state, year, present_year_totalamt, previous_year_totalamt,
+                ((present_year_totalamt-previous_year_totalamt)/NULLIF(previous_year_totalamt, 0))*100 AS percentage FROM with_lag
+                WHERE present_year_totalamt < previous_year_totalamt
+                ORDER BY percentage'''
         df2 = pd.read_sql(q2, engine)
-        fig2 = px.bar(df2, x='state', y='percentage', color='year',title='States with Decline in Transaction Amount (YoY)',
-                hover_data={'present_yr_ttlamount': ':.2f', 'prev_yr_ttlamount': ':.2f', 'percentage': ':.2f'},text_auto=True)
+        fig2 = px.bar(df2, x='state', y='percentage', color='percentage',title='States with Decline in Transaction Amount (YoY)',
+                hover_data={'year': ':.0f','present_year_totalamt': ':.2f', 'previous_year_totalamt': ':.2f', 'percentage': ':.2f'},text_auto=True)
         st.plotly_chart(fig2)
 
 # ✅ Query 3: Transaction Breakdown by Payment Type
@@ -220,24 +218,18 @@ with tab2:
               hover_data={'total_users': ':.0f'}, text_auto=True)
         st.plotly_chart(fig6)
 
-# ✅ Query 7: App Opens by Brand Over Time
-        q7 = """SELECT year, quarter, brand, SUM(appopens) AS total_opens FROM aggregated_user GROUP BY year, quarter, brand"""
-        df7 = pd.read_sql(q7, engine)
-        fig7 = px.bar(df7, x='quarter', y='total_opens', color='brand', facet_col='year',
-              title='App Opens by Brand Over Time', hover_data=['total_opens'], text_auto=True)
-        st.plotly_chart(fig7)
 
 # ✅ Query 8: Device Brand Usage by State
-        q8 = """SELECT state, brand, SUM(count) AS user_count FROM aggregated_user WHERE brand !='None' GROUP BY state, brand ORDER BY SUM(count)DESC LIMIT 30"""
+        q8 = """SELECT state, brand, SUM(count) AS user_count FROM aggregated_user WHERE brand !='None' GROUP BY state, brand ORDER BY SUM(count)DESC LIMIT 15"""
         df8 = pd.read_sql(q8, engine)
         fig8 = px.bar(df8, x='state', y='user_count', color='brand', barmode='group',
               title='Device Brand Usage by State', hover_data=['user_count'], text_auto=True)
         st.plotly_chart(fig8)
 
 # ✅ Query 9: Top 5 Brands by App Opens
-        q9 = """SELECT brand, SUM(appopens) AS opens FROM aggregated_user WHERE brand !='null' GROUP BY brand ORDER BY opens DESC LIMIT 5"""
+        q9 = """SELECT state,SUM(appopens) AS opens FROM aggregated_user WHERE brand != 'None'  GROUP BY state,appopens ORDER BY opens DESC LIMIT 8"""
         df9 = pd.read_sql(q9, engine)
-        fig9 = px.pie(df9, names='brand', values='opens', title='Top 5 Brands by App Opens',
+        fig9 = px.pie(df9, names='state', values='opens', title='Top 5 States by App Opens',
               hover_data=['opens'], hole=0.3)
         st.plotly_chart(fig9)
 
@@ -256,7 +248,7 @@ with tab2:
      SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
     ((SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
       SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) / 
-     NULLIF(SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
+     NULLIF(SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
         GROUP BY state
         ORDER BY growth_percentage DESC'''
         df10_1 = pd.read_sql(q10_1, engine)
@@ -265,8 +257,8 @@ with tab2:
 
     with st.expander("**3. Insurance Penetration and Growth Potential Analysis**"):
         # ✅ Query 11: Insurance Transaction Amount by State
-        q11 = '''select state,sum(amount) as total_ins_amt,rank()over(order by sum(amount) desc) from top_insurance Group by state
-                order by rank asc'''
+        q11 = '''select year,state,sum(amount) as total_ins_amt,rank()over(order by sum(amount) desc) from top_insurance Group by state,year
+                order by rank asc LIMIT 5'''
         df11 = pd.read_sql(q11, engine)
         fig11 = px.bar(df11, x='rank', y='total_ins_amt', color='state',
                title='Rank wise Insurance Txn States', text_auto=True)
@@ -280,7 +272,7 @@ with tab2:
         st.plotly_chart(fig12)
 
 # ✅ Query 13: Policy Count vs Insurance Amount
-        q13 = """SELECT state, SUM(count) AS policy_count, SUM(amount) AS total_amount FROM aggregated_insurance GROUP BY state ORDER BY policy_count DESC LIMIT 10"""
+        q13 = """SELECT state, SUM(count) AS policy_count, SUM(amount) AS total_amount FROM aggregated_insurance GROUP BY state ORDER BY policy_count DESC LIMIT 5"""
         df13 = pd.read_sql(q13, engine)
         fig13 = px.pie(df13, names='state', values='total_amount', color='policy_count', hole=0.3,
                title='Policy Count vs Insurance Amount', hover_data=['policy_count', 'total_amount'])
@@ -505,56 +497,6 @@ with tab2:
         st.markdown('***')
 # Add project insights and recommendations as a multi-line Python comment for use within a program
 
-    with st.expander("_**INSIGHT & RECOMMENDS**_"):
-        st.subheader("💡Insights")
-        st.write("""
-1. Transaction Trends:
-   * High-performing states - Maharashtra, Karnataka, and Tamil Nadu.
-   * Transactions have grown steadily year-over-year.
-   * Some temporary declines found.
-
-2. Payment Type Patterns:
-   * Top payments by Peer-to-Peer (P2P) and Merchant transactions.
-   * UPI is the primary method used.
-
-3. Device & User Behavior:
-   * Most users access the app through Samsung, Xiaomi, and Vivo devices.
-   * Some brands have higher app-open ratios, indicating strong engagement.
-
-4. Insurance Penetration:
-   * Urban states dominate insurance adoption.
-   * Insurance counts remain lower than total transactions.
-
-5 User Engagement:
-   * Consistent growth in app opens and registered users.
-   * Some emerging districts show high potential for expansion.
-
-6. Geographic Trends:
-   * Metro cities lead in digital activity.
-   * Rural and North-Eastern regions still show relatively low adoption.""")
-
-
-        st.subheader("✅ Recommendations")
-        st.write("""
-1. Market Expansion:
-   * Prioritize low-performance regions (e.g.,Andhaman, Lakshadweep, NE states).
-   * Use successful district strategies to replicate growth elsewhere.
-
-2. Product Strategy:
-   * Promote insurance and financial tools in underserved markets.
-   * Optimize app performance for mid-range and budget smartphones.
-
-3. Technology Enhancements:
-   * Improve UI for mobile and map resolution for better experience.
-   * Make User - Friendly for beginners to pay bills
-
-
-4. Policy Suggestions:
-   * Create Campaighns regards Insurance policy & Give awarness in rural areas.
-   * Tie-up with insurance partners.
-   * Partner with local governments to drive UPI awareness and training.""")
-
-
 
 with tab3:
       
@@ -586,6 +528,60 @@ with tab3:
         st.markdown('---')
  
 
+with tab4:
+        st.title(":violet[**INSIGHT & RECOMMENDS**]")
+        st.markdown('----')
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.header("💡**Insights**")
+            st.write("""
+1. Transaction Trends:
+   * High-performing states - Maharashtra, Karnataka, and Tamil Nadu.
+   * Transactions have grown steadily year-over-year.
+   * Some temporary declines found(Manipur,Chandigar on 2023).
+
+2. Payment Type Patterns:
+   * Top payments by Peer-to-Peer (P2P) and Merchant transactions.
+   * UPI is the primary method used.
+
+3. Device & User Behavior:
+   * Most users access the app through Samsung, Xiaomi, and Vivo devices.
+   * Some brands have higher app-open ratios, indicating strong engagement.
+
+4. Insurance Penetration:
+   * Urban states dominate insurance adoption.
+   * Insurance counts remain lower than total transactions.
+
+5 User Engagement:
+   * Consistent growth in app opens and registered users.
+   * Some emerging districts show high potential for expansion.
+
+6. Geographic Trends:
+   * Metro cities lead in digital activity.
+   * Rural and North-Eastern regions still show relatively low adoption.""")
+
+        with col2:
+            st.header("✅**Recommendations**")
+            st.write("""
+1. Market Expansion:
+   * Prioritize low-performance regions (e.g.,Andhaman, Lakshadweep, NE states).
+   * Use successful district strategies to replicate growth elsewhere.
+
+2. Product Strategy:
+   * Promote insurance and financial tools in underserved markets.
+   * Optimize app performance for mid-range and budget smartphones.
+
+3. Technology Enhancements:
+   * Improve UI for mobile and map resolution for better experience.
+   * Make User - Friendly for beginners to pay bills
+
+
+4. Policy Suggestions:
+   * Create Campaighns regards Insurance policy & Give awarness in rural areas.
+   * Tie-up with insurance partners.
+   * Partner with local governments to drive UPI awareness and training.""")
+
+        st.markdown('----')
 
 st.balloons()
-
