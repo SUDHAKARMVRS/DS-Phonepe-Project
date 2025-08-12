@@ -70,6 +70,5 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 
 <img width="960" height="540" alt="Pagemap" src="https://github.com/user-attachments/assets/f1ed3246-4109-441e-b827-1809c1d91b25" />
 
-<img width="960" height="540" alt="insight" src="https://github.com/user-attachments/assets/29c750d3-3eb2-4dbc-b7cf-0e8c1fced247" />
 
 ---
