@@ -17,7 +17,7 @@ agg_ins = pd.read_sql("SELECT * FROM aggregated_insurance", engine)
 map_trans = pd.read_sql("SELECT * FROM map_transaction", engine)
 map_ins = pd.read_sql("SELECT * FROM map_insurance", engine)
 map_user = pd.read_sql("SELECT * FROM map_user", engine)
-map_conins = pd.read_sql("SELECT * FROM map_conty_insurance", engine)
+map_conins = pd.read_sql("SELECT * FROM map_country_insurance", engine)
 top_trans = pd.read_sql("SELECT * FROM top_transaction", engine)
 top_user = pd.read_sql("SELECT * FROM top_user", engine)
 top_ins = pd.read_sql("SELECT * FROM top_insurance", engine)
@@ -41,27 +41,18 @@ st.title("📱:violet[PhonePe Transactions Dashboard]")
 merge_map = ["state", "year","district","quarter"]
 
 mdf1 = pd.merge(map_user,map_trans,on=merge_map,how="outer")
-mdf2 = pd.merge(mdf1,map_conins,on=merge_map,how="outer")
-df = pd.merge(mdf2,map_ins,on=merge_map,how="outer")
+df = pd.merge(mdf1,map_ins,on=merge_map,how="outer")
 
 # 1️⃣ Create a lookup table of unique district coordinates (from years after 2020)
 coords_lookup = (
-    df[df['year'] > 2020]                         # take only rows where lat/lon exist
+    map_conins[map_conins['year'] > 2020]                         # take only rows where lat/lon exist
     .dropna(subset=['latitude', 'longitude'])     # make sure they're not NaN
     .groupby('district')[['latitude', 'longitude']]
     .first()                                      # one coordinate per district
     .reset_index()
 )
-
-# 2️⃣ Merge lookup back into full dataset
-df = df.merge(coords_lookup, on='district', how='left', suffixes=('', '_ref'))
-
-# 3️⃣ Fill missing lat/lon using the reference
-df['latitude'] = df['latitude'].fillna(df['latitude_ref'])
-df['longitude'] = df['longitude'].fillna(df['longitude_ref'])
-
-# 4️⃣ Remove helper columns
-df = df.drop(columns=['latitude_ref', 'longitude_ref'])
+#Merge Latitude and Longitude values
+df = pd.merge(coords_lookup,df,on='district',how="outer")
 
 
 # Covert to Numeric
