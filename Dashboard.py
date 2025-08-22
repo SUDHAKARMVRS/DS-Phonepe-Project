@@ -45,7 +45,7 @@ df = pd.merge(mdf1,map_ins,on=merge_map,how="outer")
 
 # 1️⃣ Create a lookup table of unique district coordinates (from years after 2020)
 coords_lookup = (
-    map_conins[map_conins['year'] > 2020]                         # take only rows where lat/lon exist
+    map_conins[map_conins['year'] > 2020]         # take only rows where lat/lon exist
     .dropna(subset=['latitude', 'longitude'])     # make sure they're not NaN
     .groupby('district')[['latitude', 'longitude']]
     .first()                                      # one coordinate per district
@@ -551,3 +551,4 @@ with tab4:
         st.markdown('----')
 
 st.balloons()
+
