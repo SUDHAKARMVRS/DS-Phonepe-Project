@@ -37,7 +37,8 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 
 3. **Run the dashboard**
    ```bash
-   streamlit run Phonepe Dashboard.py
+   python -m streamlit run Dashboard.py
+
    ```
 
 4. **Access**
