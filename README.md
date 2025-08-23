@@ -62,14 +62,10 @@ An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**
 📫 [[LinkedIn]](https://www.linkedin.com/in/sudhakar-m-657ba787/) 
 📧 sudhakar.mvrs@gmail.com
 ## 📷 Screen Shots of Dashboard
-
-<img width="960" height="540" alt="Page1" src="https://github.com/user-attachments/assets/8dd6bdcc-7b5a-42b7-a074-17207acbbfbd" />
-
-<img width="960" height="540" alt="busines" src="https://github.com/user-attachments/assets/ef92cf93-8da7-495e-aa4e-b49525147f74" />
-
-<img width="960" height="540" alt="Page3" src="https://github.com/user-attachments/assets/c713891c-4f7e-4377-b96a-efaa670fec8a" />
-
-<img width="960" height="540" alt="Pagemap" src="https://github.com/user-attachments/assets/f1ed3246-4109-441e-b827-1809c1d91b25" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-23 131040" src="https://github.com/user-attachments/assets/abe45a5d-449a-4fad-bc77-9b0b5328f338" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-23 131056" src="https://github.com/user-attachments/assets/55dd6e96-8ec7-43a9-8842-9d7ba3be8c2c" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-23 131109" src="https://github.com/user-attachments/assets/2ee1e7ae-3999-40d0-a575-59f37500d508" />
+<img width="1920" height="1080" alt="Screenshot 2025-08-23 131150" src="https://github.com/user-attachments/assets/2af0c895-b423-444a-8c16-e842567a21c3" />
 
 
 ---
