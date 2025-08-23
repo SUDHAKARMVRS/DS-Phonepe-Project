@@ -1,14 +1,13 @@
-("**1. Decoding Transaction Dynamics on PhonePe**"):
-
 # ✅ Query 1: Total Transaction Amount by State
         q1 = """SELECT state, SUM(transaction_amount) AS total_amount FROM aggregated_transaction 
-        GROUP BY state ORDER BY total_amount DESC"""
-  
+        GROUP BY state 
+        ORDER BY total_amount DESC"""
+
 
 # ✅ Query 2: Year-over-Year Decline in Transaction Amount
         q2 = '''WITH yearly_txn AS (SELECT state, year, SUM(transaction_amount) AS present_year_totalamt
                 FROM aggregated_transaction GROUP BY state, year),
-                WITH_lag AS (SELECT *, LAG(present_year_totalamt) OVER (PARTITION BY state ORDER BY year) AS previous_year_totalamt
+                with_lag AS (SELECT *, LAG(present_year_totalamt) OVER (PARTITION BY state ORDER BY year) AS previous_year_totalamt
                 FROM yearly_txn)
                 SELECT state, year, present_year_totalamt, previous_year_totalamt,
                 ((present_year_totalamt-previous_year_totalamt)/NULLIF(previous_year_totalamt, 0))*100 AS percentage FROM with_lag
@@ -23,16 +22,19 @@
 
 # ✅ Query 4: Average Transaction Amount by State
         q4 = """SELECT state,AVG(transaction_amount) AS avg_amount FROM aggregated_transaction 
-        GROUP BY state ORDER BY avg_amount """
+        GROUP BY state 
+        ORDER BY avg_amount DESC"""
+
 
 # ✅ Query 5: National Transaction Trend by Quarter
         q5 = """SELECT year, quarter,SUM(transaction_amount) AS total_amount FROM aggregated_transaction 
-        GROUP BY year, quarter ORDER BY year, quarter"""
+        GROUP BY year, quarter 
+        ORDER BY year, quarter"""
 
 
-# ---------------------------
+
 ("**2. Device Dominance and User Engagement Analysis**"):
-# ---------------------------
+
 
 # Query 6
         # ✅ Query 6: Registered Users by Device Brand
@@ -41,227 +43,220 @@
         ORDER BY total_users DESC"""
 
 
-# ✅ Query 8: Device Brand Usage by State
-        q8 = """SELECT state, brand,SUM(count) AS user_count FROM aggregated_user 
-        WHERE brand !='None' 
-        GROUP BY state, brand 
-        ORDER BY SUM(count)DESC 
-        LIMIT 15"""
 
-# ✅ Query 9: Top 5 Brands by App Opens
-        q9 = """SELECT state,SUM(appopens) AS opens FROM aggregated_user WHERE brand != 'None'  
+
+# ✅ Query 7: Top 5 Brands by App Opens
+        q7 = """SELECT state,SUM(appopens) AS opens FROM aggregated_user 
+        WHERE brand != 'None'  
         GROUP BY state,appopens 
         ORDER BY opens DESC 
-        LIMIT 8"""
+        LIMIT 5"""
 
 
-# ✅ Query 10: App Opens to User Ratio by Brand
-        q10 = """SELECT brand,SUM(appopens)/SUM(count) AS open_to_user_ratio FROM aggregated_user 
+# ✅ Query 8: App Opens to User Ratio by Brand
+        q8 = """SELECT brand,SUM(appopens)/SUM(count) AS open_to_user_ratio FROM aggregated_user 
         GROUP BY brand 
         ORDER BY open_to_user_ratio DESC"""
 
 
-# ✅ Query 10.1: User Growth Percentage from 2023 to 2024
-        q10_1 = '''SELECT state,
-    SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END) AS y2023,
-    SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) AS y2024,
-    (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
-     SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
-    ((SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
-      SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) / 
-     NULLIF(SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
+# ✅ Query 9: User Growth Percentage from 2023 to 2024
+        q9 = '''SELECT state,
+        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END) AS y2023,
+        SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) AS y2024,
+        (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
+        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
+        ((SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
+        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) / 
+        NULLIF(SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
         GROUP BY state
         ORDER BY growth_percentage DESC'''
 
 
 ("**3. Insurance Penetration and Growth Potential Analysis**"):
 
-# ✅ Query 11: Insurance Transaction Amount by State
+        # ✅ Query 10: Insurance Transaction Amount by State
+        q10 = '''select year,state,sum(amount) as total_ins_amt,rank()over(order by sum(amount) desc) from top_insurance 
+        Group by state,year
+        Order by rank asc LIMIT 10'''
 
-        q11 = '''select year,state,sum(amount) as total_ins_amt,rank()over(order by sum(amount) desc) from top_insurance 
-        GROUP BY state,year
-        ORDER BY rank asc 
-        LIMIT 10'''
 
-# ✅ Query 12: Yearly Insurance Growth Trend
-        q12 = """SELECT year, SUM(amount) AS total_amount FROM aggregated_insurance 
+# ✅ Query 11: Yearly Insurance Growth Trend
+        q11 = """SELECT year, SUM(amount) AS total_amount FROM aggregated_insurance 
         GROUP BY year 
         ORDER BY year"""
 
 
-# ✅ Query 14: Insurance Market Share by State
-        q14 = """SELECT state,SUM(amount) AS total_amount FROM aggregated_insurance 
+
+# ✅ Query 12: Insurance Market Share by State
+        q12 = """SELECT state,SUM(amount) AS total_amount FROM aggregated_insurance 
         GROUP BY state"""
 
 
-# ✅ Query 15: Top 5 States by Insurance Policy Count
-        q15 = """SELECT state,SUM(count) AS total_policies FROM aggregated_insurance 
+# ✅ Query 13: Top 5 States by Insurance Policy Count
+        q13 = """SELECT state,SUM(count) AS total_policies FROM aggregated_insurance 
         GROUP BY state 
         ORDER BY total_policies DESC 
         LIMIT 5"""
 
-
 ("**4. Transaction Analysis for Market Expansion**"):
 
-# ✅ Query 16: Avg Transaction Amount by State
-        q16 = """SELECT state, AVG(transaction_amount) AS avg_amount FROM map_transaction 
+# ✅ Query 14: Avg Transaction Amount by State
+        q14 = """SELECT state, AVG(transaction_amount) AS avg_amount FROM map_transaction 
         GROUP BY state 
         ORDER BY avg_amount ASC 
         LIMIT 5"""
 
 
-# ✅ Query 17: Transaction Trend Over Time
-        q17 = """SELECT year, quarter,SUM(transaction_amount) AS total_amount FROM map_transaction 
+# ✅ Query 15: Transaction Trend Over Time
+        q15 = """SELECT year, quarter,SUM(transaction_amount) AS total_amount FROM map_transaction 
         GROUP BY year, quarter 
         ORDER BY year, quarter"""
 
 
-# ✅ Query 18: Top 10 Districts by Transaction Amount
-        q18 = """SELECT district,SUM(transaction_amount) AS total_amount FROM map_transaction 
+# ✅ Query 16: Top 10 Districts by Transaction Amount
+        q16 = """SELECT district,SUM(transaction_amount) AS total_amount FROM map_transaction 
         GROUP BY district 
         ORDER BY total_amount DESC 
         LIMIT 10"""
 
 
-# ✅ Query 19: Average Transaction Amount per State
-        q19 = """SELECT state,AVG(transaction_amount) AS avg_amount FROM map_transaction 
+# ✅ Query 17: Average Transaction Amount per State
+        q17 = """SELECT state,AVG(transaction_amount) AS avg_amount FROM map_transaction 
         GROUP BY state 
         ORDER BY avg_amount DESC """
 
-
-# ✅ Query 20: Transaction Count Yearly Trend
-        q20 = """SELECT year,SUM(transaction_count) AS total_txns FROM map_transaction 
+# ✅ Query 18: Transaction Count Yearly Trend
+        q18 = """SELECT year,SUM(transaction_count) AS total_txns FROM map_transaction 
         GROUP BY year 
         ORDER BY year"""
 
 
-    with st.expander("**5. User Engagement and Growth Strategy**"):
-        # ✅ Query 21: Registered Users by State
-        q21 = """SELECT state,SUM(registered_users) AS total_users FROM map_user 
+ ("**5. User Engagement and Growth Strategy**"):
+
+# ✅ Query 19: Registered Users by State
+        q19 = """SELECT state,SUM(registered_users) AS total_users FROM map_user 
         GROUP BY state 
         ORDER BY total_users DESC"""
 
 
-# ✅ Query 22: Top 10 Districts by Registered Users
-        q22 = """SELECT district,SUM(registered_users) AS total_users FROM map_user 
+# ✅ Query 20: Top 10 Districts by Registered Users
+        q20 = """SELECT district,SUM(registered_users) AS total_users FROM map_user 
         GROUP BY district 
         ORDER BY total_users DESC 
         LIMIT 10"""
 
 
-# ✅ Query 23: Quarterly Registered Users Over Time
-        q23 = """SELECT year,quarter,SUM(registered_users) AS users FROM map_user GROUP BY year, quarter ORDER BY year, quarter"""
+# ✅ Query 21: Quarterly Registered Users Over Time
+        q21 = """SELECT year,quarter,SUM(registered_users) AS users FROM map_user 
+        GROUP BY year, quarter 
+        ORDER BY year, quarter"""
 
 
-# ✅ Query 24: User Growth by State Over Years
-        q24 = '''SELECT state, 
+# ✅ Query 22: User Growth by State Over Years
+        q22 = '''SELECT state, 
        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END) AS y2023,
        SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) AS y2024,
        (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
        (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END))/(SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END))*100 as growth_percentage
-        FROM aggregated_user 
-        GROUP BY state 
-        ORDER BY growth_percentage desc 
-        limit 5;'''
+        FROM aggregated_user GROUP BY state ORDER BY growth_percentage desc limit 5;'''
 
 
 
-# ✅ Query 25: Top Districts per Year by User Registrations
-        q25 = """SELECT year,district,SUM(registered_users) AS total_users FROM map_user 
-        GROUP BY year, district 
+# ✅ Query 23: Top Districts per Year by User Registrations
+        q23 = """SELECT district,SUM(registered_users) AS total_users FROM map_user 
+        GROUP BY district 
         ORDER BY total_users DESC 
         LIMIT 10"""
 
-    with st.expander("**6. Insurance Engagement Analysis**"):
 
-# ✅ Query 26: Insurance Amount by State
-        q26 = "SELECT state,SUM(amount) AS total_amount FROM top_insurance 
+
+("**6. Insurance Engagement Analysis**"):
+
+# ✅ Query 24: Insurance Amount by State
+        q24 = "SELECT state,SUM(amount) AS total_amount FROM top_insurance 
         GROUP BY state 
         ORDER BY total_amount DESC"
 
 
-# ✅ Query 27: Top 10 Districts by Insurance Amount
-        q27 = "SELECT district,SUM(amount) AS total_amount FROM top_insurance 
+# ✅ Query 25: Top 10 Districts by Insurance Amount
+        q25= "SELECT district,SUM(amount) AS total_amount FROM top_insurance 
         GROUP BY district 
         ORDER BY total_amount DESC 
         LIMIT 10"
 
-# ✅ Query 28: Top 10 Pincodes by Insurance Amount
-        q28 = "SELECT pincode,SUM(amount) AS total_amount FROM top_insurance 
+
+# ✅ Query 26: Top 10 Pincodes by Insurance Amount
+        q26 = "SELECT pincode,SUM(amount) AS total_amount FROM top_insurance 
         WHERE pincode !='0' 
         GROUP BY pincode 
         ORDER BY total_amount DESC 
         LIMIT 10"
 
 
-# ✅ Query 29: Insurance Transactions Over Time
-        q29 = "SELECT year,quarter,SUM(amount) AS total_amount FROM top_insurance 
+# ✅ Query 27: Insurance Transactions Over Time
+        q27 = "SELECT year,quarter,SUM(amount) AS total_amount FROM top_insurance 
         GROUP BY year, quarter 
         ORDER BY quarter asc"
 
 
-# ✅ Query 30: Top Districts by Insurance per Year
-        q30 = "SELECT year,district,SUM(amount) AS total_amount FROM top_insurance 
+# ✅ Query 28: Top Districts by Insurance per Year
+        q28 = "SELECT year,district,SUM(amount) AS total_amount FROM top_insurance 
         GROUP BY year, district 
         ORDER BY total_amount DESC 
         LIMIT 10"
 
 
-    with st.expander("**7.Transaction Analysis Across States and Districts**"):        
+("**7.Transaction Analysis Across States and Districts**"):        
 
-# ✅ Query 31: Total Transactions by State
-        q31 = "SELECT quarter,SUM(transaction_amount) AS total_amount FROM map_transaction 
+# ✅ Query 29: Total Transactions by State
+        q29 = "SELECT quarter,SUM(transaction_amount) AS total_amount FROM map_transaction 
         GROUP BY quarter 
         ORDER BY total_amount DESC"
 
-
-# ✅ Query 32: Top 10 Districts by Transaction Amount
-        q32 = "SELECT district, SUM(transaction_amount) AS total_amount FROM map_transaction 
+# ✅ Query 30: Top 10 Districts by Transaction Amount
+        q30 = "SELECT district, SUM(transaction_amount) AS total_amount FROM map_transaction 
         GROUP BY district 
         ORDER BY total_amount DESC 
         LIMIT 10"
 
-# ✅ Query 33: Top 10 Pincodes by Transaction Amount
-        q33 = "SELECT pincode, SUM(amount) AS total_amount FROM top_transaction 
+
+# ✅ Query 31: Top 10 Pincodes by Transaction Amount
+        q31 = "SELECT pincode, SUM(amount) AS total_amount FROM top_transaction 
         WHERE pincode!= '0' 
         GROUP BY pincode 
-        ORDER BY total_amount DESC
+        ORDER BY total_amount DESC 
         LIMIT 10"
 
 
-# ✅ Query 34: Yearly Transaction Amount (Nationwide)
-        q34 = "SELECT year,SUM(transaction_amount) AS total_amount FROM map_transaction 
+# ✅ Query 32: Yearly Transaction Amount (Nationwide)
+        q32 = "SELECT year,SUM(transaction_amount) AS total_amount FROM map_transaction 
         GROUP BY year"
 
-# ✅ Query 35: Top Districts by Yearly Transactions
-        q35 = '''SELECT district, year, SUM(transaction_amount) AS total FROM map_transaction
+
+# ✅ Query 33: Top Districts by Yearly Transactions
+        q33 = '''SELECT district, year, SUM(transaction_amount) AS total FROM map_transaction
                 GROUP BY district, year 
                 ORDER BY total DESC 
                 LIMIT 10'''
 
 
-    with st.expander("**8. User Registration Analysis**"):  
+"**8. User Registration Analysis**"  
 
-# ✅ Query 38: Top 10 Pincodes by User Registrations
-        q38 = "SELECT pincode, SUM(registeredusers) AS total_users FROM top_user 
-        WHERE pincode!='0' 
+# ✅ Query 34: Top 10 Pincodes by User Registrations
+        q34 = "SELECT pincode, SUM(registeredusers) AS total_users FROM top_user 
         GROUP BY pincode 
-        ORDER BY total_users DESC 
-        LIMIT 10"
+        HAVING pincode>0 
+        ORDER BY total_users DESC LIMIT 10"
 
 
-# ✅ Query 39: Quarterly User Registration Trends
-        q39 = "SELECT year,quarter,SUM(registered_users) AS users FROM map_user 
+# ✅ Query 35: Quarterly User Registration Trends
+        q35 = "SELECT year,quarter,SUM(registered_users) AS users FROM map_user 
         GROUP BY year, quarter 
         ORDER BY year, quarter"
 
 
-# ✅ Query 40: User Growth by State and Year
-        q40 = "SELECT state,year,SUM(registered_users) AS users FROM map_user 
-        GROUP BY state, year 
-        ORDER BY users DESC"
 
-# ✅ Query 41: User Growth by Year
-        q41 = "SELECT year,SUM(registered_users) AS users FROM map_user 
+# ✅ Query 36: User Growth by Year
+        q36 = "SELECT year,SUM(registered_users) AS users FROM map_user 
         GROUP BY year 
         ORDER BY year DESC"
