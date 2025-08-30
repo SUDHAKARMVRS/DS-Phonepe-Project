@@ -61,13 +61,13 @@
 
 # ✅ Query 9: User Growth Percentage from 2023 to 2024
         q9 = '''SELECT state,
-        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END) AS y2023,
-        SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) AS y2024,
-        (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
-        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
-        ((SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - 
-        SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) / 
-        NULLIF(SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
+        SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END) AS y2023,
+        SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) AS y2024,
+        (SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) - 
+        SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END)) AS growth,
+        ((SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) - 
+        SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END)) / 
+        NULLIF(SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END), 0)) * 100 AS growth_percentage FROM aggregated_user
         GROUP BY state
         ORDER BY growth_percentage DESC'''
 
@@ -154,10 +154,10 @@
 
 # ✅ Query 22: User Growth by State Over Years
         q22 = '''SELECT state, 
-       SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END) AS y2023,
-       SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) AS y2024,
-       (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END)) AS growth,
-       (SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN CAST(year as INTEGER) = 2023 THEN registeredusers ELSE 0 END))/(SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END))*100 as growth_percentage
+       SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END) AS y2023,
+       SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) AS y2024,
+       (SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END)) AS growth,
+       (SUM(CASE WHEN year = 2024 THEN registeredusers ELSE 0 END) - SUM(CASE WHEN year = 2023 THEN registeredusers ELSE 0 END))/(SUM(CASE WHEN CAST(year as INTEGER) = 2024 THEN registeredusers ELSE 0 END))*100 as growth_percentage
         FROM aggregated_user GROUP BY state ORDER BY growth_percentage desc limit 5;'''
 
 
