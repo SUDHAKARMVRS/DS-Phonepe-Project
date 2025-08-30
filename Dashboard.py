@@ -50,14 +50,15 @@ mdf2 = pd.merge(mdf1,map_ins,on=merge_map,how="outer")
 
 # Get Coordinates for Districts
 coords_lookup = (
-    map_conins[map_conins['year'] > 2020]         # take only rows where lat/lon exist
-    .dropna(subset=['latitude', 'longitude'])     # make sure they're not NaN
-    .groupby('district')[['latitude', 'longitude']]
-    .first()                                # one coordinate per district
+    map_conins[map_conins['year'] > 2020]
+    .dropna(subset=['latitude', 'longitude'])
+    .groupby(['state', 'district'])[['latitude', 'longitude']]
+    .first()
     .reset_index()
 )
-# Merge with main dataframe
-df = pd.merge(coords_lookup,mdf2,on='district',how="inner")
+
+# When merging, use both 'state' and 'district'
+df = pd.merge(coords_lookup, mdf2, on=['state', 'district'], how="inner")
 
 
 # Covert to Numeric
