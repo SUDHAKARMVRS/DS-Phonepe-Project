@@ -3,6 +3,7 @@ import pandas as pd                     # For data manipulation
 from sqlalchemy import create_engine    # For PostgreSQL connection
 import plotly.express as px             # For interactive visualizations
 import streamlit as st                  # For web app creation
+import psycopg2                         # PostgreSQL adapter
 
 
 # Database Connection
@@ -131,7 +132,7 @@ tab1, tab2, tab3,tab4 = st.tabs(["📈:violet[**METRICS**]", "📊:violet[**VISU
 # Tab 1: Metrics and Map
 
 with tab1:
-    metric(filtered_df)
+    metric(df)
 
 # India Map Creation
     st.title(":blue[**🗺️Map**]")
@@ -157,7 +158,7 @@ with tab1:
     size_max=30,
     color_continuous_scale="Plasma",
     zoom=4,
-    height=900)
+    height=700)
     fig.update_layout(
     mapbox_style="open-street-map",
     margin={"r":0, "t":0, "l":0, "b":0})
