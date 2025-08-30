@@ -1,5 +1,5 @@
 
-# 📱 PhonePe Pulse Dashboard (2024)
+# 📱 PhonePe Pulse Dashboard
 
 An interactive, full-featured dashboard built with **Streamlit**, **PostgreSQL**, **Plotly** to visualize and analyze PhonePe transaction and user data across India from 2018 to 2024.
 
